@@ -206,8 +206,12 @@ def run(
                     confidence = float(conf)
                     confidence_str = f"{confidence:.2f}"
 
+                    box_width = xyxy[2] - xyxy[0]
+                    scaled_width = im0.shape[1]
+                    width_ratio = (box_width / scaled_width) * 100
+
                     if save_csv:
-                        write_to_csv(p.name, label, confidence_str)
+                        write_to_csv(p.name, label, confidence_str, width_ratio)
 
                     if save_txt:  # Write to file
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
@@ -217,7 +221,7 @@ def run(
 
                     if save_img or save_crop or view_img:  # Add bbox to image
                         c = int(cls)  # integer class
-                        label = None if hide_labels else (names[c] if hide_conf else f"{names[c]} {conf:.2f}")
+                        label = None if hide_labels else (names[c] if hide_conf else f"{names[c]} {conf:.2f} length ={width_ratio:.2f}")
                         annotator.box_label(xyxy, label, color=colors(c, True))
                     if save_crop:
                         save_one_box(xyxy, imc, file=save_dir / "crops" / names[c] / f"{p.stem}.jpg", BGR=True)
