@@ -167,12 +167,13 @@ def run(
         # Create or append to the CSV file
         def write_to_csv(image_name, prediction, confidence, width_ratio):
             """Writes prediction data for an image to a CSV file, appending if the file exists."""
-            data = {"Image Name": image_name, "Length": float(width_ratio), "Prediction": prediction, "Confidence": confidence}
-            with open(csv_path, mode="a", newline="") as f:
-                writer = csv.DictWriter(f, fieldnames=data.keys())
-                if not csv_path.is_file():
-                    writer.writeheader()
-                writer.writerow(data)
+            if (prediction!='Scale'):
+              data = {"Image Name": image_name, "Length": float(width_ratio), "Prediction": prediction, "Confidence": confidence}
+              with open(csv_path, mode="a", newline="") as f:
+                  writer = csv.DictWriter(f, fieldnames=data.keys())
+                  if not csv_path.is_file():
+                      writer.writeheader()
+                  writer.writerow(data)
 
         # Process predictions
         for i, det in enumerate(pred):  # per image
