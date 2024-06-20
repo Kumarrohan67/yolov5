@@ -78,7 +78,7 @@ def run(
     device="",  # cuda device, i.e. 0 or 0,1,2,3 or cpu
     view_img=False,  # show results
     save_txt=False,  # save results to *.txt
-    save_csv=False,  # save results in CSV format
+    save_csv=True,  # save results in CSV format
     save_conf=False,  # save confidences in --save-txt labels
     save_crop=False,  # save cropped prediction boxes
     nosave=False,  # do not save images/videos
@@ -165,9 +165,9 @@ def run(
         csv_path = save_dir / "predictions.csv"
 
         # Create or append to the CSV file
-        def write_to_csv(image_name, prediction, confidence):
+        def write_to_csv(image_name, prediction, confidence, width_ratio):
             """Writes prediction data for an image to a CSV file, appending if the file exists."""
-            data = {"Image Name": image_name, "Prediction": prediction, "Confidence": confidence}
+            data = {"Image Name": image_name, "Length": float(width_ratio), "Prediction": prediction, "Confidence": confidence}
             with open(csv_path, mode="a", newline="") as f:
                 writer = csv.DictWriter(f, fieldnames=data.keys())
                 if not csv_path.is_file():
@@ -221,6 +221,7 @@ def run(
 
                     if save_img or save_crop or view_img:  # Add bbox to image
                         c = int(cls)  # integer class
+                        write_to_csv(p.name, label, confidence_str, width_ratio)
                         label = None if hide_labels else (names[c] if hide_conf else f"{names[c]} {conf:.2f} length ={width_ratio:.2f}")
                         annotator.box_label(xyxy, label, color=colors(c, True))
                     if save_crop:
